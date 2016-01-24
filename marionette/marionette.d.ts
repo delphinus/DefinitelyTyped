@@ -313,6 +313,8 @@ declare module Marionette {
          */
         el: any;
 
+        $el: JQuery;
+
         /** 
          * Renders and displays the specified view in this region.
          * @param view the view to display.
@@ -352,6 +354,13 @@ declare module Marionette {
          * @returns view that this region has.
          */
         currentView: Backbone.View<Backbone.Model>;
+
+        /**
+         * Override this method to change how the region finds the DOM
+         * element that it manages. Return a jQuery selector object scoped
+         * to a provided parent el or the document if none exists.
+         */
+        getEl(el: any): JQuery;
     }
 
     interface RegionDefaults {
