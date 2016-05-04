@@ -50,26 +50,26 @@ namespace Marionette.Tests {
     class MyApplication extends Marionette.Application {
         initialize(options?: any) {
             console.log("initializing application");
-            this.layoutView = new AppLayoutView();
+            this.view = new AppView();
         }
 
-        layoutView: AppLayoutView;
+        view: AppView;
         mainRegion: Marionette.Region;
 
         onStart() {
             this.mainRegion = new Marionette.Region({ el: '#main' });
-            this.layoutView.addRegion('main', this.mainRegion);
-            this.layoutView.render();
-            this.layoutView.showChildView('main', new MyView(new MyModel));
-            let view: Backbone.View<Backbone.Model> = this.layoutView.getChildView('main');
-            let regions: {[key: string]: Marionette.Region} = this.layoutView.getRegions();
-            let prefix: string = this.layoutView.childViewEventPrefix;
-            let region: Marionette.Region = this.layoutView.removeRegion('main');
-            let layout: Marionette.LayoutView<Backbone.Model> = this.layoutView.destroy();
+            this.view.addRegion('main', this.mainRegion);
+            this.view.render();
+            this.view.showChildView('main', new MyView(new MyModel));
+            let view: Backbone.View<Backbone.Model> = this.view.getChildView('main');
+            let regions: {[key: string]: Marionette.Region} = this.view.getRegions();
+            let prefix: string = this.view.childViewEventPrefix;
+            let region: Marionette.Region = this.view.removeRegion('main');
+            let layout: Marionette.View<Backbone.Model> = this.view.destroy();
         }
     }
 
-    class AppLayoutView extends Marionette.LayoutView<Backbone.Model> {
+    class AppView extends Marionette.View<Backbone.Model> {
         constructor() {
             super({ el: 'body' });
         }
@@ -79,7 +79,7 @@ namespace Marionette.Tests {
         }
 
         initialize(options?: any) {
-            console.log("initializing layoutview");
+            console.log("initializing View");
         }
     }
 
@@ -110,7 +110,7 @@ namespace Marionette.Tests {
 
     }
 
-    class MyView extends Marionette.ItemView<MyModel> {
+    class MyView extends Marionette.View<MyModel> {
         behaviors: any;
 
         constructor(model: MyModel) {

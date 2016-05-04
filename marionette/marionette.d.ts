@@ -674,7 +674,7 @@ declare namespace Marionette {
      * exists as a base view for other view classes to be extended from, and to
      * provide a common location for behaviors that are shared across all views.
      */
-    class View<TModel extends Backbone.Model> extends Backbone.View<TModel> {
+    class AbstractView<TModel extends Backbone.Model> extends Backbone.View<TModel> {
 
         constructor(options?: Backbone.ViewOptions<TModel>);
 
@@ -810,9 +810,9 @@ declare namespace Marionette {
      * a Backbone.Model or may be a Backbone.Collection. Whichever it is though,
      * it will be treated as a single item.
      */
-    class ItemView<TModel extends Backbone.Model> extends View<TModel> {
+    class View<TModel extends Backbone.Model> extends AbstractView<TModel> {
 
-        constructor(options?: Backbone.ViewOptions<TModel>);
+        constructor(options?: ViewOptions<TModel>);
 
         /**
          * Item views will serialize a model or collection, by default, by calling
@@ -833,7 +833,7 @@ declare namespace Marionette {
          * onRender callbacks to layer in additional functionality to the
          * rendering of your view.
          */
-        render(): ItemView<TModel>;
+        render(): View<TModel>;
 
         /**
          * Triggered before an ItemView is rendered.
@@ -846,6 +846,70 @@ declare namespace Marionette {
          * it has been rendered.
          */
         onRender(): void;
+
+        /**
+         * If you have the need to replace the Region with a region class of your
+         * own implementation, you can specify an alternate class to use with this
+         * property.
+         */
+        regionClass: any;
+
+        /**
+         * Handle destroying regions, and then destroy the view itself.
+         */
+        destroy(): View<TModel>;
+
+        /**
+         * Regions hash or a method returning the regions hash that maps
+         * regions/selectors to methods on your View.
+         **/
+        regions(): any;
+
+        /** Adds a region to the layout view. */
+        addRegion(name: string, definition: any): Region;
+
+        /**
+         * Add multiple regions as a {name: definition, name2: def2} object literal.
+         */
+        addRegions(regions: any): any;
+
+        /** Returns a region from the layout view */
+        getRegion(name: string): Region;
+
+        /**
+         * Removes the region with the specified name.
+         * @param name the name of the region to remove.
+         */
+        removeRegion(name: string): Region;
+
+        /** Enable easy overriding of the default `RegionManager`
+          * for customized region interactions and business specific
+          * view logic for better control over single regions.
+          */
+        getRegionManager(): RegionManager;
+
+        /**
+         * Show a view into the region specified by `regionName`.
+         */
+        showChildView(regionName: string, view: any, options?: RegionShowOptions): void;
+
+        /**
+         * Get the current view that is shown in the region specified by
+         * `regionName`.
+         */
+        getChildView(regionName: string): Backbone.View<TModel>;
+
+        /**
+         * Returns all regions from the layout view. The results contains an
+         * Object hash that has `string`s as keys and `Region`s as values.
+         */
+        getRegions(): {[key: string]: Region};
+
+        /**
+         * You can customize the event prefix for events that are forwarded through
+         * the layout view with this property.
+         */
+        childViewEventPrefix: string;
     }
 
 
@@ -884,7 +948,7 @@ declare namespace Marionette {
      * DOM. This behavior can be disabled by specifying {sort: false} on
      * initialize.
      */
-    class CollectionView<TModel extends Backbone.Model, TView extends View<Backbone.Model>> extends View<TModel> {
+    class CollectionView<TModel extends Backbone.Model, TView extends View<Backbone.Model>> extends AbstractView<TModel> {
         constructor(options?: CollectionViewOptions<TModel>);
 
         /**
@@ -1052,7 +1116,7 @@ declare namespace Marionette {
         *   return this;
         * }
         */
-        attachElContent(html: string): ItemView<TModel>;
+        attachElContent(html: string): View<TModel>;
 
         /**
          * Reorder DOM after sorting. When your element's rendering
@@ -1175,7 +1239,7 @@ declare namespace Marionette {
         onRenderCollection(): void;
     }
 
-    interface LayoutViewOptions<TModel extends Backbone.Model> extends Backbone.ViewOptions<TModel> {
+    interface ViewOptions<TModel extends Backbone.Model> extends Backbone.ViewOptions<TModel> {
         /**
          * The LayoutView takes an additional parameter where you can pass the regions as option on creation.
          */
@@ -1188,96 +1252,6 @@ declare namespace Marionette {
          * default)
          */
         destroyImmediate?: boolean;
-    }
-
-    /**
-     * A LayoutView is a hybrid of an ItemView and a collection of Region objects.
-     * They are ideal for rendering application layouts with multiple sub-regions
-     * managed by specified region managers.
-     * A layoutView can also act as a composite-view to aggregate multiple views
-     * and sub-application areas of the screen allowing applications to attach
-     * multiple region managers to dynamically rendered HTML.
-     * You can create complex views by nesting layoutView managers within Regions.
-     */
-    class LayoutView<TModel extends Backbone.Model> extends ItemView<TModel> {
-        /**
-         * If you have the need to replace the Region with a region class of your
-         * own implementation, you can specify an alternate class to use with this
-         * property.
-         */
-        regionClass: any;
-
-        /**
-         * Constructor.
-         * A hash that can contain a regions hash that allows you to specify regions per
-         * LayoutView instance.
-         */
-        constructor(options?: LayoutViewOptions<TModel>);
-
-        /**
-         * Handle destroying regions, and then destroy the view itself.
-         */
-        destroy(): LayoutView<TModel>;
-
-        /**
-         * Regions hash or a method returning the regions hash that maps
-         * regions/selectors to methods on your View.
-         **/
-        regions(): any;
-
-        /** Adds a region to the layout view. */
-        addRegion(name: string, definition: any): Region;
-
-        /**
-         * Add multiple regions as a {name: definition, name2: def2} object literal.
-         */
-        addRegions(regions: any): any;
-
-        /** Returns a region from the layout view */
-        getRegion(name: string): Region;
-
-        /**
-         * Renders the view. It will use the existing region objects the first
-         * time it is called. Subsequent calls will destroy the views that the
-         * regions are showing and then reset the `el` for the regions to the
-         * newly rendered DOM elements.
-         */
-        render(): LayoutView<TModel>;
-
-        /**
-         * Removes the region with the specified name.
-         * @param name the name of the region to remove.
-         */
-        removeRegion(name: string): Region;
-
-        /** Enable easy overriding of the default `RegionManager`
-          * for customized region interactions and business specific
-          * view logic for better control over single regions.
-          */
-        getRegionManager(): RegionManager;
-
-        /**
-         * Show a view into the region specified by `regionName`.
-         */
-        showChildView(regionName: string, view: any, options?: RegionShowOptions): void;
-
-        /**
-         * Get the current view that is shown in the region specified by
-         * `regionName`.
-         */
-        getChildView(regionName: string): Backbone.View<TModel>;
-
-        /**
-         * Returns all regions from the layout view. The results contains an
-         * Object hash that has `string`s as keys and `Region`s as values.
-         */
-        getRegions(): {[key: string]: Region};
-
-        /**
-         * You can customize the event prefix for events that are forwarded through
-         * the layout view with this property.
-         */
-        childViewEventPrefix: string;
     }
 
     interface AppRouterOptions extends Backbone.RouterOptions {
