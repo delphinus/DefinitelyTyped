@@ -803,6 +803,7 @@ declare namespace Marionette {
         isDestroyed: boolean;
         supportsRenderLifecycle: boolean;
         supportsDestroyLifecycle: boolean;
+        isRendered(): boolean;
     }
 
     /**
