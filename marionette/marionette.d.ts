@@ -800,7 +800,7 @@ declare namespace Marionette {
         /**
          * Internal properties extended in Marionette.View.
          */
-        isDestroyed: boolean;
+        isDestroyed(): boolean;
         supportsRenderLifecycle: boolean;
         supportsDestroyLifecycle: boolean;
         isRendered(): boolean;
