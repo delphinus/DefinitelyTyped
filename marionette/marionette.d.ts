@@ -804,6 +804,7 @@ declare namespace Marionette {
         supportsRenderLifecycle: boolean;
         supportsDestroyLifecycle: boolean;
         isRendered(): boolean;
+        delegateEntityEvents(): this;
     }
 
     /**
