@@ -1,6 +1,11 @@
 /// <reference path="../jquery/jquery.d.ts" />
 /// <reference path="mCustomScrollbar.d.ts" />
 
+import * as $ from "jquery";
+import * as factory from "malihu-custom-scrollbar-plugin";
+
+const j: JQueryStatic = factory($, window, document);
+
 class SimpleTest {
     element: JQuery;
 
